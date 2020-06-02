@@ -24,7 +24,7 @@ DARKGREY = (40, 40, 40)
 # crea el grid para el automata
 def drawGrid():
 
-
+    screen.blit(img.image, img.coords)
 
 
 
@@ -32,6 +32,8 @@ def drawGrid():
 def resetLife():
 
 
+# Cambia el valor alpha de las celulas vivas
+def colorize(item, life_dict):
 
 
 # inicializa el automata con una linea recta
@@ -42,11 +44,6 @@ def StraightLine(life_dict, size):
         life_dict[midx + size, midy] = 1
         size = size - 1
     return life_dict
-
-
-# Cambia el valor alpha de las celulas vivas
-def colorize(item, life_dict):
-
 
 
 # cuenta el numero de vecinos
