@@ -23,18 +23,22 @@ DARKGREY = (40, 40, 40)
 
 # crea el grid para el automata
 def drawGrid():
-
-    screen.blit(img.image, img.coords)
+    cutimg = pi.ProcesarImagen('../Pygameoflife/490149_905766.jpg',
+                               WIDTH, HEIGHT, CELL)
+    for img in cutimg:
+        img.image.putalpha(180)
+        pygame.image.load()
+        screen.blit(img.image, img.coords)
 
 
 
 # resetea el automata
 def resetLife():
-
+    T=1
 
 # Cambia el valor alpha de las celulas vivas
 def colorize(item, life_dict):
-
+    t=1
 
 # inicializa el automata con una linea recta
 def StraightLine(life_dict, size):
@@ -100,25 +104,28 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption('Swarm Intelligence Game of Life')
     screen.fill(WHITE)
-    life_dict = resetLife()
+    #life_dict = resetLife()
 
-    for item in life_dict:
-        colorize(item, life_dict)
     drawGrid()
     pygame.display.update()
+    # for item in life_dict:
+    #     colorize(item, life_dict)
+    # drawGrid()
+    # pygame.display.update()
     #
+
     while True:  # main loop that runs the game
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            COUNT += 1
-            life_dict = runStep(life_dict)
-        for item in life_dict:
-            colorize(item, life_dict)
+    #     for event in pygame.event.get():
+    #         if event.type == QUIT:
+    #             pygame.quit()
+    #             sys.exit()
+    #         COUNT += 1
+    #         life_dict = runStep(life_dict)
+    #     for item in life_dict:
+    #         colorize(item, life_dict)
         drawGrid()
         pygame.display.update()
-        CLOCK.tick(REFRESH)
+    #     CLOCK.tick(REFRESH)
 
 
 if __name__ == '__main__':
