@@ -4,6 +4,10 @@ import random
 from ProcessImg import Process as pi
 import os,sys
 import image_slicer
+from Pygameoflife import entities
+from PIL import Image
+import cv2
+
 WIDTH = 800
 HEIGHT = 600
 CELL = 50
@@ -21,19 +25,24 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 DARKGREY = (40, 40, 40)
 
-
+diccionario_cords = {}
 # crea el grid para el automata
 def drawGrid():
     cutimg = pi.ProcesarImagen('490149_905766.jpg',
                                WIDTH, HEIGHT, CELL)
     i = 1
     j = 1
-
     image_slicer.save_tiles(cutimg, directory='cut_images', prefix='slice', format='png')
+    imagen_transparente= cutimg[0].image.putalpha(0)
+    
+    #imagen_transparente = imagen_transparente.save('cut_images/transparente.png')
     for img in cutimg:
-        img.image.putalpha(0)
         outfile = 'cut_images/slice_%02d_%02d.png' % (i,j)
-        imagen = pygame.image.load(outfile)
+        diccionario_cords[outfile] = img.coords
+        imagen = pygame.image.load(outfile).convert() 
+        imagen.set_alpha(0)
+        #surface.blit(image, (0, 0)) 
+        #imagen = pygame.image.load(outfile)
         screen.blit(imagen, img.coords)
         if j == 16:
             j = 1 
@@ -44,11 +53,26 @@ def drawGrid():
 
 # resetea el automata
 def resetLife():
-    T=1
+    life_dict= {}
+    for y in range(0,int(CELL_HEIGHT/CELL)):
+        for x in range(0,int(CELL_WIDTH/CELL)):
+            life_dict[x,y]= 0 
+    return life_dict
 
 # Cambia el valor alpha de las celulas vivas
 def colorize(item, life_dict):
-    t=1
+    x = item[0]
+    y = item[1]
+    outfile = 'cut_images/slice_%02d_%02d.png' % (x+1,y+1)
+    imagen = pygame.image.load(outfile).convert()
+    imagen.set_alpha(255)
+    if life_dict[item] == 0:
+        imagen.set_alpha(0)
+        screen.blit(imagen, diccionario_cords[outfile])
+    elif life_dict[item] == 1:
+        imagen.set_alpha(255)
+        screen.blit(imagen, diccionario_cords[outfile])
+    return None
 
 # inicializa el automata con una linea recta
 def StraightLine(life_dict, size):
@@ -102,34 +126,68 @@ def runStep(life_dict):
                 new_life[item] = 0
     return new_life
 
+def Loafer(life_dict):
+    midx=CELL_HEIGHT/2
+    midy=CELL_WIDTH/2
+    life_dict[midx-3,midy-5] = 1
+    life_dict[midx-2,midy-5] = 1
+    life_dict[midx+1,midy-5] = 1
+    life_dict[midx+3,midy-5] = 1
+    life_dict[midx+4,midy-5] = 1
+
+    life_dict[midx-4,midy-4] = 1
+    life_dict[midx-1,midy-4] = 1
+    life_dict[midx+2,midy-4] = 1
+    life_dict[midx+3,midy-4] = 1
+
+    life_dict[midx-3,midy-3] = 1
+    life_dict[midx-1,midy-3] = 1
+
+    life_dict[midx-2,midy-2] = 1
+
+    life_dict[midx+4,midy-1] = 1
+
+    life_dict[midx+2,midy] = 1
+    life_dict[midx+3,midy] = 1
+    life_dict[midx+4,midy] = 1
+
+    life_dict[midx+1,midy+1] = 1
+
+    life_dict[midx+2,midy+2] = 1
+
+    life_dict[midx+3,midy+3] = 1
+    life_dict[midx+4,midy+3] = 1
+
+    return life_dict
+
 
 def main():
     # Initialization of the game board and cells
     
     pygame.display.set_caption('Swarm Intelligence Game of Life')
     screen.fill(WHITE)
-    #life_dict = resetLife()
-
+    life_dict = resetLife()
+    life_dict = Loafer(life_dict)
     drawGrid()
     pygame.display.update()
-    # for item in life_dict:
-    #     colorize(item, life_dict)
-    # drawGrid()
-    # pygame.display.update()
+    for item in life_dict:
+        colorize(item, life_dict)
+   # drawGrid()
+    pygame.display.update()
     #
 
     while True:  # main loop that runs the game
         for event in pygame.event.get():
             if event.type == QUIT:
-                 pygame.quit()
-                 sys.exit()
-    #         COUNT += 1
-    #         life_dict = runStep(life_dict)
-    #     for item in life_dict:
-    #         colorize(item, life_dict)
+                pygame.quit()
+                sys.exit()
+           # COUNT += 1
+           # life_dict = runStep(life_dict)
+        for item in life_dict:
+            colorize(item, life_dict)
         drawGrid()
         pygame.display.update()
-    #     CLOCK.tick(REFRESH)
+       # CLOCK.tick(REFRESH)
 
 
 if __name__ == '__main__':
