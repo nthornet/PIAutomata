@@ -2,7 +2,8 @@ import pygame, sys
 from pygame.locals import *
 import random
 from ProcessImg import Process as pi
-
+import os,sys
+import image_slicer
 WIDTH = 800
 HEIGHT = 600
 CELL = 50
@@ -23,13 +24,22 @@ DARKGREY = (40, 40, 40)
 
 # crea el grid para el automata
 def drawGrid():
-    cutimg = pi.ProcesarImagen('../Pygameoflife/490149_905766.jpg',
+    cutimg = pi.ProcesarImagen('490149_905766.jpg',
                                WIDTH, HEIGHT, CELL)
-    for img in cutimg:
-        img.image.putalpha(180)
-        pygame.image.load()
-        screen.blit(img.image, img.coords)
+    i = 1
+    j = 1
 
+    image_slicer.save_tiles(cutimg, directory='cut_images', prefix='slice', format='png')
+    for img in cutimg:
+        img.image.putalpha(0)
+        outfile = 'cut_images/slice_%02d_%02d.png' % (i,j)
+        imagen = pygame.image.load(outfile)
+        screen.blit(imagen, img.coords)
+        if j == 16:
+            j = 1 
+            i += 1
+        else:
+            j += 1
 
 
 # resetea el automata
@@ -95,13 +105,7 @@ def runStep(life_dict):
 
 def main():
     # Initialization of the game board and cells
-    pygame.init()
-
-    global screen
-    global COUNT
-    COUNT = 0
-    CLOCK = pygame.time.Clock()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    
     pygame.display.set_caption('Swarm Intelligence Game of Life')
     screen.fill(WHITE)
     #life_dict = resetLife()
@@ -115,10 +119,10 @@ def main():
     #
 
     while True:  # main loop that runs the game
-    #     for event in pygame.event.get():
-    #         if event.type == QUIT:
-    #             pygame.quit()
-    #             sys.exit()
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                 pygame.quit()
+                 sys.exit()
     #         COUNT += 1
     #         life_dict = runStep(life_dict)
     #     for item in life_dict:
@@ -129,4 +133,10 @@ def main():
 
 
 if __name__ == '__main__':
+    pygame.init()
+    global screen
+    global COUNT
+    COUNT = 0
+    CLOCK = pygame.time.Clock()
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
     main()

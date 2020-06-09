@@ -18,8 +18,8 @@ def ProcesarImagen(filepath,width, height,cellsize):
     tiles = image_slicer.slice(filepath, number_tiles=None, col=int(width/cellsize), row=int(height/cellsize), save=False)
 
     # Mostrar los corte *Solo para debugeo*
-    # for tile in tiles:
-    #    tile.image.show()
+    #for tile in tiles:
+    #    tile.image.show()    
 
     return tiles
 
@@ -40,7 +40,7 @@ def changeImageSize(maxWidth,
 if __name__ == "__main__":
     newcut = ProcesarImagen('../Pygameoflife/490149_905766.jpg',800, 600,100)
     viejo = copy.deepcopy(newcut)
-    tempimg = newcut[39]
-    tempimg.image.putalpha(200)
+    tempimg = newcut[1]
+    tempimg.image.putalpha(255)
     tempimg.image.show()
     viejo[39].image.show()
