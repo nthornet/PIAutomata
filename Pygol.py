@@ -28,6 +28,7 @@ DARKGREY = (40, 40, 40)
 diccionario_cords = {}
 # crea el grid para el automata
 def drawGrid():
+    global diccionario_cords
     cutimg = pi.ProcesarImagen('490149_905766.jpg',
                                WIDTH, HEIGHT, CELL)
     i = 1
@@ -40,7 +41,7 @@ def drawGrid():
         outfile = 'cut_images/slice_%02d_%02d.png' % (i,j)
         diccionario_cords[outfile] = img.coords
         imagen = pygame.image.load(outfile).convert() 
-        imagen.set_alpha(0)
+        imagen.set_alpha(255)
         #surface.blit(image, (0, 0)) 
         #imagen = pygame.image.load(outfile)
         screen.blit(imagen, img.coords)
@@ -61,11 +62,12 @@ def resetLife():
 
 # Cambia el valor alpha de las celulas vivas
 def colorize(item, life_dict):
+    global diccionario_cords
     x = item[0]
     y = item[1]
     outfile = 'cut_images/slice_%02d_%02d.png' % (x+1,y+1)
     imagen = pygame.image.load(outfile).convert()
-    imagen.set_alpha(255)
+    
     if life_dict[item] == 0:
         imagen.set_alpha(0)
         screen.blit(imagen, diccionario_cords[outfile])
@@ -163,7 +165,7 @@ def Loafer(life_dict):
 
 def main():
     # Initialization of the game board and cells
-    
+    global COUNT
     pygame.display.set_caption('Swarm Intelligence Game of Life')
     screen.fill(WHITE)
     life_dict = resetLife()
@@ -172,7 +174,7 @@ def main():
     pygame.display.update()
     for item in life_dict:
         colorize(item, life_dict)
-   # drawGrid()
+    drawGrid()
     pygame.display.update()
     #
 
@@ -181,19 +183,21 @@ def main():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-           # COUNT += 1
-           # life_dict = runStep(life_dict)
+            COUNT += 1
+        life_dict = runStep(life_dict)
         for item in life_dict:
             colorize(item, life_dict)
         drawGrid()
         pygame.display.update()
-       # CLOCK.tick(REFRESH)
+        CLOCK.tick(REFRESH)
 
 
 if __name__ == '__main__':
     pygame.init()
     global screen
     global COUNT
+    
+    life_dict = resetLife()
     COUNT = 0
     CLOCK = pygame.time.Clock()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
