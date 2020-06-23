@@ -34,16 +34,15 @@ def drawGrid():
     i = 1
     j = 1
     image_slicer.save_tiles(cutimg, directory='cut_images', prefix='slice', format='png')
-    imagen_transparente= cutimg[0].image.putalpha(0)
     
     #imagen_transparente = imagen_transparente.save('cut_images/transparente.png')
     for img in cutimg:
         outfile = 'cut_images/slice_%02d_%02d.png' % (i,j)
         diccionario_cords[outfile] = img.coords
         imagen = pygame.image.load(outfile).convert() 
-        imagen.set_alpha(255)
-        #surface.blit(image, (0, 0)) 
-        #imagen = pygame.image.load(outfile)
+        imagen.set_alpha(0)
+      #  surface.blit(image, (0, 0)) 
+      #  imagen = pygame.image.load(outfile)
         screen.blit(imagen, img.coords)
         if j == 16:
             j = 1 
@@ -67,7 +66,6 @@ def colorize(item, life_dict):
     y = item[1]
     outfile = 'cut_images/slice_%02d_%02d.png' % (x+1,y+1)
     imagen = pygame.image.load(outfile).convert()
-    
     if life_dict[item] == 0:
         imagen.set_alpha(0)
         screen.blit(imagen, diccionario_cords[outfile])
@@ -89,7 +87,6 @@ def StraightLine(life_dict, size):
 # cuenta el numero de vecinos
 def getNeighbours(item, life_dict):
     neighbour_count = 0
-
     for x in range(-1, 2):
         for y in range(-1, 2):
             neighbour = (item[0] + x, item[1] + y)
@@ -126,6 +123,7 @@ def runStep(life_dict):
                 new_life[item] = 1
             else:
                 new_life[item] = 0
+ #   print('Run Step')
     return new_life
 
 def Loafer(life_dict):
@@ -177,14 +175,14 @@ def main():
     drawGrid()
     pygame.display.update()
     #
-
     while True:  # main loop that runs the game
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            COUNT += 1
-        life_dict = runStep(life_dict)
+            life_dict = runStep(life_dict)
+        COUNT += 1
+        screen.fill(WHITE)
         for item in life_dict:
             colorize(item, life_dict)
         drawGrid()

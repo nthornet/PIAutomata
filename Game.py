@@ -277,7 +277,6 @@ def main():
 
     #Initialization of the game board and cells
     pygame.init()
-
     global SURFACE
     global COUNT
     COUNT=0
