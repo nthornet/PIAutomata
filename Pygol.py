@@ -40,10 +40,10 @@ def drawGrid():
         outfile = 'cut_images/slice_%02d_%02d.png' % (i,j)
         diccionario_cords[outfile] = img.coords
         imagen = pygame.image.load(outfile).convert() 
-        imagen.set_alpha(0)
+       # imagen.set_alpha(0)
       #  surface.blit(image, (0, 0)) 
       #  imagen = pygame.image.load(outfile)
-        screen.blit(imagen, img.coords)
+      #  screen.blit(imagen, img.coords)
         if j == 16:
             j = 1 
             i += 1
@@ -62,15 +62,16 @@ def resetLife():
 # Cambia el valor alpha de las celulas vivas
 def colorize(item, life_dict):
     global diccionario_cords
+    global screen
     x = item[0]
     y = item[1]
     outfile = 'cut_images/slice_%02d_%02d.png' % (x+1,y+1)
     imagen = pygame.image.load(outfile).convert()
-    if life_dict[item] == 0:
-        imagen.set_alpha(0)
-        screen.blit(imagen, diccionario_cords[outfile])
-    elif life_dict[item] == 1:
+    if life_dict[item]:
         imagen.set_alpha(255)
+        screen.blit(imagen, diccionario_cords[outfile])
+    else:
+        imagen.set_alpha(0)
         screen.blit(imagen, diccionario_cords[outfile])
     return None
 
@@ -105,7 +106,8 @@ def getNeighbours(item, life_dict):
 
 # calcula el proximo paso
 def runStep(life_dict):
-    new_life = {}
+    new_life = resetLife()
+
     for item in life_dict:
         neighbour_count = getNeighbours(item, life_dict)
         if life_dict[item] == 1:  # cell is alive and we need to check if it will stay alive
@@ -162,17 +164,23 @@ def Loafer(life_dict):
 
 
 def main():
-    # Initialization of the game board and cells
+    pygame.init()
+    global screen
     global COUNT
+    COUNT = 0
+    CLOCK = pygame.time.Clock()
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    # Initialization of the game board and cells
+
     pygame.display.set_caption('Swarm Intelligence Game of Life')
     screen.fill(WHITE)
     life_dict = resetLife()
-    life_dict = Loafer(life_dict)
+    Loafer(life_dict)
     drawGrid()
-    pygame.display.update()
+ #   pygame.display.update()
     for item in life_dict:
         colorize(item, life_dict)
-    drawGrid()
+  #  drawGrid()
     pygame.display.update()
     #
     while True:  # main loop that runs the game
@@ -180,23 +188,15 @@ def main():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            life_dict = runStep(life_dict)
+        life_dict = runStep(life_dict)
         COUNT += 1
         screen.fill(WHITE)
         for item in life_dict:
             colorize(item, life_dict)
-        drawGrid()
+       # drawGrid()
         pygame.display.update()
         CLOCK.tick(REFRESH)
 
 
 if __name__ == '__main__':
-    pygame.init()
-    global screen
-    global COUNT
-    
-    life_dict = resetLife()
-    COUNT = 0
-    CLOCK = pygame.time.Clock()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
     main()
