@@ -168,42 +168,42 @@ def Loafer(life_dict):
     return life_dict
 
 
-def square(life_dict)
-    def main():
-        # Initialization of the game board and cells
-        pygame.init()
-        global screen
-        global COUNT
 
-        life_dict = resetLife()
-        COUNT = 0
-        CLOCK = pygame.time.Clock()
-        screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        pygame.display.set_caption('Swarm Intelligence Game of Life')
+def main():
+    # Initialization of the game board and cells
+    pygame.init()
+    global screen
+    global COUNT
+
+    life_dict = resetLife()
+    COUNT = 0
+    CLOCK = pygame.time.Clock()
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption('Swarm Intelligence Game of Life')
+    screen.fill(WHITE)
+    life_dict = resetLife()
+    life_dict = Loafer(life_dict)
+    # life_dict = StraightLine(life_dict,10)
+    drawGrid()
+
+    for item in life_dict:
+        colorize(item, life_dict)
+    # drawGrid()
+    pygame.display.update()
+    #
+    while True:  # main loop that runs the game
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+        life_dict = runStep(life_dict)
+        COUNT += 1
         screen.fill(WHITE)
-        life_dict = resetLife()
-        life_dict = Loafer(life_dict)
-        # life_dict = StraightLine(life_dict,10)
-        drawGrid()
-
         for item in life_dict:
             colorize(item, life_dict)
         # drawGrid()
         pygame.display.update()
-        #
-        while True:  # main loop that runs the game
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    pygame.quit()
-                    sys.exit()
-            life_dict = runStep(life_dict)
-            COUNT += 1
-            screen.fill(WHITE)
-            for item in life_dict:
-                colorize(item, life_dict)
-            # drawGrid()
-            pygame.display.update()
-            CLOCK.tick(REFRESH)
+        CLOCK.tick(REFRESH)
 
 
 if __name__ == '__main__':
