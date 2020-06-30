@@ -34,6 +34,12 @@ diccionario_cords={}
 global Automata
 Automata = {}
 
+global screen
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+global life_dict
+life_dict = {}
+    
 #crea el grid para el automata
 def drawGrid():
     cutimg = pi.ProcesarImagen('490149_905766.jpg',
@@ -64,8 +70,8 @@ def drawGrid():
 # resetea el automata
 def resetLife():
     life_dict= {}
-    for y in range(0,int(CELL_HEIGHT/CELL)):
-        for x in range(0,int(CELL_WIDTH/CELL)):
+    for y in range(0,int(CELL_HEIGHT)):
+        for x in range(0,int(CELL_WIDTH)):
             life_dict[x,y]= 0 
     return life_dict
 
@@ -120,26 +126,26 @@ def getNeighbours(item, life_dict):
 
 # calcula el proximo paso
 def runStep(life_dict):
-    new_life = {}
+    returnlife = {}
     for item in life_dict:
         neighbour_count = getNeighbours(item, life_dict)
         if life_dict[item] == 1:  # cell is alive and we need to check if it will stay alive
             if neighbour_count < 2:
                 # dies due to underpopulation
-                new_life[item] = 0
+                returnlife[item] = 0
             elif neighbour_count > 3:
                 # dies due to overcrowding
-                new_life[item] = 0
+                returnlife[item] = 0
             else:
                 # cell stays alive
-                new_life[item] = 1
+                returnlife[item] = 1
         elif life_dict[item] == 0:
             if neighbour_count == 3:
-                new_life[item] = 1
+                returnlife[item] = 1
             else:
-                new_life[item] = 0
+                returnlife[item] = 0
  #   print('Run Step')
-    return new_life
+    return returnlife
 
 def Loafer(life_dict):
     midx=CELL_HEIGHT/2
@@ -179,19 +185,19 @@ def main():
     # Initialization of the game board and cells
     pygame.init()
     global screen
-    global COUNT
+    global life_dict
 
     life_dict = resetLife()
     COUNT = 0
     CLOCK = pygame.time.Clock()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    #screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption('Swarm Intelligence Game of Life')
     screen.fill(WHITE)
     life_dict = resetLife()
     life_dict = Loafer(life_dict)
     #life_dict = StraightLine(life_dict,10)
     drawGrid()
-
+    
     for item in life_dict:
         colorize(item, life_dict)
     #drawGrid()
