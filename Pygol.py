@@ -167,6 +167,8 @@ def Loafer(life_dict):
     return life_dict
 
 
+
+
 def main():
     # Initialization of the game board and cells
     pygame.init()
@@ -183,7 +185,6 @@ def main():
     life_dict = Loafer(life_dict)
     # life_dict = StraightLine(life_dict,10)
     drawGrid()
-
     for item in life_dict:
         colorize(item, life_dict)
     # drawGrid()
