@@ -287,9 +287,9 @@ def main():
     life_dict = resetLife()
     #life_dict = initializeLife(life_dict)
     #life_dict = RPentomino(life_dict)
-    life_dict = Loafer(life_dict)
+    #life_dict = Loafer(life_dict)
     #life_dict = GosperGlider(life_dict)
-    #life_dict = StraightLine(life_dict,20)
+    life_dict = StraightLine(life_dict,20)
     #life_dict = DrawLoaf(life_dict)
     #life_dict = DrawToad(life_dict)
     #life_dict = DrawGlider(life_dict)
@@ -305,8 +305,8 @@ def main():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            COUNT += 1
-            life_dict=runStep(life_dict)
+        COUNT += 1
+        life_dict=runStep(life_dict)
         for item in life_dict:
             colorize(item,life_dict)
         drawGrid()
