@@ -1,12 +1,10 @@
 import pygame, sys
 from pygame.locals import *
 import random
-from ProcessImg import Process as pi
+from Image.ProcessImg import Process as pi
 import os, sys
 import image_slicer
-from Pygameoflife import entities
 from PIL import Image
-import cv2
 
 WIDTH = 800
 HEIGHT = 600
@@ -89,6 +87,39 @@ def StraightLine(life_dict, size):
         size = size - 1
     return life_dict
 
+def Loafer(life_dict):
+    midx=CELL_HEIGHT/2
+    midy=CELL_WIDTH/2
+    life_dict[midx-3,midy-5] = 1
+    life_dict[midx-2,midy-5] = 1
+    life_dict[midx+1,midy-5] = 1
+    life_dict[midx+3,midy-5] = 1
+    life_dict[midx+4,midy-5] = 1
+
+    life_dict[midx-4,midy-4] = 1
+    life_dict[midx-1,midy-4] = 1
+    life_dict[midx+2,midy-4] = 1
+    life_dict[midx+3,midy-4] = 1
+
+    life_dict[midx-3,midy-3] = 1
+    life_dict[midx-1,midy-3] = 1
+
+    life_dict[midx-2,midy-2] = 1
+
+    life_dict[midx+4,midy-1] = 1
+
+    life_dict[midx+2,midy] = 1
+    life_dict[midx+3,midy] = 1
+    life_dict[midx+4,midy] = 1
+
+    life_dict[midx+1,midy+1] = 1
+
+    life_dict[midx+2,midy+2] = 1
+
+    life_dict[midx+3,midy+3] = 1
+    life_dict[midx+4,midy+3] = 1
+
+    return life_dict
 
 # cuenta el numero de vecinos
 def getNeighbours(item, life_dict):
@@ -130,42 +161,6 @@ def runStep(life_dict):
                 new_life[item] = 0
     #   print('Run Step')
     return new_life
-
-
-def Loafer(life_dict):
-    midx = CELL_HEIGHT / 2
-    midy = CELL_WIDTH / 2
-    life_dict[midx - 3, midy - 5] = 1
-    life_dict[midx - 2, midy - 5] = 1
-    life_dict[midx + 1, midy - 5] = 1
-    life_dict[midx + 3, midy - 5] = 1
-    life_dict[midx + 4, midy - 5] = 1
-
-    life_dict[midx - 4, midy - 4] = 1
-    life_dict[midx - 1, midy - 4] = 1
-    life_dict[midx + 2, midy - 4] = 1
-    life_dict[midx + 3, midy - 4] = 1
-
-    life_dict[midx - 3, midy - 3] = 1
-    life_dict[midx - 1, midy - 3] = 1
-
-    life_dict[midx - 2, midy - 2] = 1
-
-    life_dict[midx + 4, midy - 1] = 1
-
-    life_dict[midx + 2, midy] = 1
-    life_dict[midx + 3, midy] = 1
-    life_dict[midx + 4, midy] = 1
-
-    life_dict[midx + 1, midy + 1] = 1
-
-    life_dict[midx + 2, midy + 2] = 1
-
-    life_dict[midx + 3, midy + 3] = 1
-    life_dict[midx + 4, midy + 3] = 1
-
-    return life_dict
-
 
 
 
