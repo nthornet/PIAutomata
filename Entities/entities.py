@@ -72,7 +72,7 @@ class GameOfLife():
         self.Cellsize = cellsize
 
     def GetLife_Dict(self, filepath, width, height, cellsize):
-        tiles = ProcesarImagen(filepath, '../Image/cut_images/', width, height, cellsize)
+        tiles = ProcesarImagen(filepath, '../Image/CutImg/', width, height, cellsize)
         
         life_dict = {}
 
