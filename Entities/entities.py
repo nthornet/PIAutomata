@@ -18,12 +18,18 @@ class Display():
     def AddAutomata(self, Automata):
         self.Automatas.append(Automata)
 
+    def DrawGrid(self):
+        for item in self.Automatas[0].life_dict.values():
+           item.convertedImage = pygame.image.load(item.slice.filename).convert()            
+
     def PlayGame(self): 
         pygame.init()
         pygame.display.set_caption('Swarm Intelligence Game of Life')
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         self.CLOCK = pygame.time.Clock()
-        
+        self.DrawGrid()
+        for item in self.Automatas[0].life_dict:
+               self.Colorize(item)          
         while True:  # main loop that runs the game
             pygame.display.update()
             self.screen.fill(WHITE)
@@ -31,12 +37,12 @@ class Display():
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
-                #self.RunStep()
-            #self.COUNT += 1
-        #for item in self.Automatas[0].life_dict:
-        #    Colorize(item)
-        #drawGrid()
-        #self.clock.tick(40)
+            self.RunStep()
+            for item in self.Automatas[0].life_dict:
+                self.Colorize(item)   
+       #     self.COUNT += 1
+            self.CLOCK.tick(5)
+
     def RunStep(self):
         for automata in self.Automatas:
             automata.RunStep()
@@ -45,15 +51,15 @@ class Display():
         x = item[0]
         y = item[1]
         
-        cel = self.Automatas[0].getCel(x,y)
-        image = cel.slice
+        cel = self.Automatas[0].GetCell(x,y)
+        image = cel.convertedImage
         
         coordinates = cel.slice.coords
-        coordinates = (coordinates[1], coordinates[0])
+        coordinates = (coordinates[0], coordinates[1])
         
-        if self.Automatas[0].life_dict[item] == 0:
+        if self.Automatas[0].life_dict[item].alive == 0:
             image.set_alpha(0)
-        elif self.Automatas[0].life_dict[item] == 1:
+        elif self.Automatas[0].life_dict[item].alive == 1:
             image.set_alpha(255)
         self.screen.blit(image, coordinates)
 
@@ -63,9 +69,10 @@ class GameOfLife():
         self.WIDTH = width
         self.HEIGHT = height
         self.life_dict = self.GetLife_Dict(filepath, width, height, cellsize)
-    
+        self.Cellsize = cellsize
+
     def GetLife_Dict(self, filepath, width, height, cellsize):
-        tiles = ProcesarImagen(filepath, '../Image/CutImg/', width, height, cellsize)
+        tiles = ProcesarImagen(filepath, '../Image/cut_images/', width, height, cellsize)
         
         life_dict = {}
 
@@ -78,9 +85,41 @@ class GameOfLife():
         
         return life_dict
 
-    def GetCell(x,y):
-        return life_dict[x,y]
+    def GetCell(self,x,y):
+        return self.life_dict[x,y]
 
+    def Loafer(self):
+        midx= int((self.HEIGHT/self.Cellsize)/2)
+        midy= int((self.WIDTH/self.Cellsize)/2)
+        self.life_dict[midx-3,midy-5].alive = 1
+        self.life_dict[midx-2,midy-5].alive = 1
+        self.life_dict[midx+1,midy-5].alive = 1
+        self.life_dict[midx+3,midy-5].alive = 1
+        self.life_dict[midx+4,midy-5].alive = 1
+
+        self.life_dict[midx-4,midy-4].alive = 1
+        self.life_dict[midx-1,midy-4].alive = 1
+        self.life_dict[midx+2,midy-4].alive = 1
+        self.life_dict[midx+3,midy-4].alive = 1
+
+        self.life_dict[midx-3,midy-3].alive = 1
+        self.life_dict[midx-1,midy-3].alive = 1
+
+        self.life_dict[midx-2,midy-2].alive = 1
+
+        self.life_dict[midx+4,midy-1].alive = 1
+
+        self.life_dict[midx+2,midy].alive = 1
+        self.life_dict[midx+3,midy].alive = 1
+        self.life_dict[midx+4,midy].alive = 1
+
+        self.life_dict[midx+1,midy+1].alive = 1
+
+        self.life_dict[midx+2,midy+2].alive = 1
+
+        self.life_dict[midx+3,midy+3].alive = 1
+        self.life_dict[midx+4,midy+3].alive = 1
+        
     def RunStep(self):
         new_life = {}
         for item in self.life_dict:
@@ -88,19 +127,19 @@ class GameOfLife():
             if self.life_dict[item].alive == 1:  # cell is alive and we need to check if it will stay alive
                 if neighbour_count < 2:
                     # dies due to underpopulation
-                    new_life[item] = Celula(0, self.life_dict[item].slice) #0
+                    new_life[item] = Celula(0, self.life_dict[item].slice, self.life_dict[item].convertedImage) #0
                 elif neighbour_count > 3:
                     # dies due to overcrowding
-                    new_life[item] = Celula(0, self.life_dict[item].slice) #0
+                    new_life[item] = Celula(0, self.life_dict[item].slice, self.life_dict[item].convertedImage) #0
                 else:
                     # cell stays alive
-                    new_life[item] = Celula(1, self.life_dict[item].slice) #1
+                    new_life[item] = Celula(1, self.life_dict[item].slice, self.life_dict[item].convertedImage) #1
             
             elif self.life_dict[item].alive == 0:
                 if neighbour_count == 3:
-                    new_life[item] = Celula(1, self.life_dict[item].slice) #1
+                    new_life[item] = Celula(1, self.life_dict[item].slice, self.life_dict[item].convertedImage) #1
                 else:
-                    new_life[item] = Celula(0, self.life_dict[item].slice) #0
+                    new_life[item] = Celula(0, self.life_dict[item].slice, self.life_dict[item].convertedImage) #0
         #   print('Run Step')
         self.life_dict = new_life
 
@@ -121,13 +160,14 @@ class GameOfLife():
         return neighbour_count
 
 class Celula():
-    def __init__(self, alive, sliceImg):
+    def __init__(self, alive, sliceImg, convertedImage = None):
         self.alive = alive
         self.slice = sliceImg 
-
+        self.convertedImage = convertedImage
 if __name__ == '__main__':
-    Go = Display(800,600,100)
+    Go = Display(800,600,40)
     Automata_1 = GameOfLife("Turismo", "../Image/TestImg/test.jpg", \
                              Go.WIDTH, Go.HEIGHT, Go.CELL)
+    Automata_1.Loafer()
     Go.AddAutomata(Automata_1)
     Go.PlayGame()
