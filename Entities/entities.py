@@ -31,12 +31,12 @@ class Display():
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
-                #self.RunStep()
-            #self.COUNT += 1
-        #for item in self.Automatas[0].life_dict:
-        #    Colorize(item)
+                self.RunStep()
+            self.COUNT += 1
+        for item in self.Automatas[0].life_dict:
+            Colorize(item)
         #drawGrid()
-        #self.clock.tick(40)
+        self.clock.tick(40)
     def RunStep(self):
         for automata in self.Automatas:
             automata.RunStep()
@@ -63,9 +63,10 @@ class GameOfLife():
         self.WIDTH = width
         self.HEIGHT = height
         self.life_dict = self.GetLife_Dict(filepath, width, height, cellsize)
-    
+        self.Cellsize = cellsize
+
     def GetLife_Dict(self, filepath, width, height, cellsize):
-        tiles = ProcesarImagen(filepath, '../Image/CutImg/', width, height, cellsize)
+        tiles = ProcesarImagen(filepath, '../Image/cut_images/', width, height, cellsize)
         
         life_dict = {}
 
@@ -78,9 +79,41 @@ class GameOfLife():
         
         return life_dict
 
-    def GetCell(x,y):
-        return life_dict[x,y]
+    def GetCell(self,x,y):
+        return self.life_dict[x,y]
 
+    def Loafer(self):
+        midx= (self.HEIGHT/self.Cellsize)/2
+        midy= (self.WIDTH/self.Cellsize)/2
+        self.life_dict[midx-3,midy-5] = 1
+        self.life_dict[midx-2,midy-5] = 1
+        self.life_dict[midx+1,midy-5] = 1
+        self.life_dict[midx+3,midy-5] = 1
+        self.life_dict[midx+4,midy-5] = 1
+
+        self.life_dict[midx-4,midy-4] = 1
+        self.life_dict[midx-1,midy-4] = 1
+        self.life_dict[midx+2,midy-4] = 1
+        self.life_dict[midx+3,midy-4] = 1
+
+        self.life_dict[midx-3,midy-3] = 1
+        self.life_dict[midx-1,midy-3] = 1
+
+        self.life_dict[midx-2,midy-2] = 1
+
+        self.life_dict[midx+4,midy-1] = 1
+
+        self.life_dict[midx+2,midy] = 1
+        self.life_dict[midx+3,midy] = 1
+        self.life_dict[midx+4,midy] = 1
+
+        self.life_dict[midx+1,midy+1] = 1
+
+        self.life_dict[midx+2,midy+2] = 1
+
+        self.life_dict[midx+3,midy+3] = 1
+        self.life_dict[midx+4,midy+3] = 1
+        
     def RunStep(self):
         new_life = {}
         for item in self.life_dict:
@@ -129,5 +162,6 @@ if __name__ == '__main__':
     Go = Display(800,600,100)
     Automata_1 = GameOfLife("Turismo", "../Image/TestImg/test.jpg", \
                              Go.WIDTH, Go.HEIGHT, Go.CELL)
+    Automata_1.Loafer()
     Go.AddAutomata(Automata_1)
     Go.PlayGame()
