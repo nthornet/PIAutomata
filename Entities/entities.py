@@ -5,6 +5,7 @@ from Process import ProcesarImagen
 
 class ImageTop:
     # Automatas(GameOfLife) con Pygame
+    pass
 
 
 class GameOfLife():
@@ -14,15 +15,22 @@ class GameOfLife():
     
     def GetLife_Dict(self, filepath, width, height, cellsize):
         tiles = ProcesarImagen(filepath, '../Image/CutImg/', width, height, cellsize)
+        
         life_dict = {}
-        for x in range( int(height/cellsize) ):
-            for y in range( int(width/cellsize) ):
-                life_dict[x,y] = Celula(False, tiles[x*width+y])
 
+        cell_width = int(width/cellsize)
+        cell_height = int(height/cellsize)
+        
+        for y in range(0, cell_height):
+            for x in range(0, cell_width):
+                life_dict[x,y] = Celula(False, tiles[y*cell_width+x])
+        
+        return life_dict
 
-        return tiles
+    def GetCell(x,y):
+        return life_dict[x,y]
 
-    def RunStep():
+    def runStep(self):
         pass
 
 class Celula():
@@ -31,4 +39,4 @@ class Celula():
         self.slice = sliceImg 
 
 if __name__ == '__main__':
-    Automata_1 = GameOfLife("Turismo", "../Image/TestImg/test.jpg",  600,600,100)
+    Automata_1 = GameOfLife("Turismo", "../Image/TestImg/test.jpg", 800, 600, 100)
