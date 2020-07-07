@@ -46,6 +46,9 @@ class Display():
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == KEYDOWN:
+                    for automata in self.Automatas:
+                        automata.initializeLife()
             self.RunStep()
             self.PutOnScreen()
             self.CLOCK.tick(5)
