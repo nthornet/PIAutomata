@@ -1,10 +1,15 @@
 import sys,pygame
 from pygame.locals import *
-sys.path.append('../Image/ProcessImg/')
-sys.path.append('../Functions')
-from Process import ProcesarImagen
+try:
+    from Process import ProcesarImagen
+except:
+    sys.path.append('../Image/ProcessImg/')
+    from Process import ProcesarImagen
 
+BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+DARKGREY = (40, 40, 40)
 
 class Display():
     def __init__(self, width, height, cellsize):
@@ -61,15 +66,15 @@ class Celula():
         self.convertedImage = convertedImage
         
 class GameOfLife():
-    def __init__(self, name,  filepath, width, height, cellsize):
+    def __init__(self, name,  filepath, directory, width, height, cellsize):
         self.name = name
         self.WIDTH = width
         self.HEIGHT = height
-        self.life_dict = self.GetLife_Dict(filepath, width, height, cellsize)
+        self.life_dict = self.GetLife_Dict(filepath, directory, width, height, cellsize)
         self.Cellsize = cellsize
 
-    def GetLife_Dict(self, filepath, width, height, cellsize):
-        tiles = ProcesarImagen(filepath, '../Image/CutImg/', width, height, cellsize)
+    def GetLife_Dict(self, filepath, directory, width, height, cellsize):
+        tiles = ProcesarImagen(filepath, directory, width, height, cellsize)
         
         life_dict = {}
 
@@ -169,7 +174,7 @@ class GameOfLife():
 
 if __name__ == '__main__':
     Go = Display(800,600,40)
-    Automata_1 = GameOfLife("Turismo", "../Image/TestImg/test.jpg", \
+    Automata_1 = GameOfLife("Turismo", "../Image/TestImg/test.jpg", '../Image/CutImg/', \
                              Go.WIDTH, Go.HEIGHT, Go.CELL)
     Automata_1.Loafer()
     Go.AddAutomata(Automata_1)
