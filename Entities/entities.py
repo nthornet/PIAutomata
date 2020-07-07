@@ -1,4 +1,5 @@
 import sys,pygame
+import random
 from pygame.locals import *
 try:
     from Process import ProcesarImagen
@@ -24,8 +25,9 @@ class Display():
         self.Automatas.append(Automata)
 
     def DrawGrid(self):
-        for item in self.Automatas[0].life_dict.values():
-           item.convertedImage = pygame.image.load(item.slice.filename).convert()            
+        for automata in self.Automatas:                 
+            for item in automata.life_dict.values():
+                item.convertedImage = pygame.image.load(item.slice.filename).convert()            
 
     def PlayGame(self): 
         pygame.init()
@@ -54,10 +56,34 @@ class Display():
             automata.Colorize()
 
     def PutOnScreen(self):
-        for item in self.Automatas[0].life_dict:
-            image       = self.Automatas[0].life_dict[item].convertedImage
-            coordinates = self.Automatas[0].life_dict[item].slice.coords
-            self.screen.blit(image, coordinates)
+
+        cell_width = int(self.WIDTH / self.CELL)
+        cell_height = int(self.HEIGHT / self.CELL)
+
+        if len(self.Automatas) == 1:
+            for item in self.Automatas[0].life_dict:
+                image       = self.Automatas[0].life_dict[item].convertedImage
+                coordinates = self.Automatas[0].life_dict[item].slice.coords
+                self.screen.blit(image, coordinates)
+        else:
+            indice_mayor = -1
+            if self.Automatas[0].Priority > self.Automatas[1].Priority:
+                indice_mayor = 0
+            else:
+                indice_mayor = 1
+
+            indice_menor = abs(indice_mayor-1)
+        
+            for y in range(0, cell_height):
+                for x in range(0, cell_width):
+                        if self.Automatas[indice_mayor].life_dict[x,y].alive == 1:
+                            image       = self.Automatas[indice_mayor].life_dict[x,y].convertedImage
+                            coordinates = self.Automatas[indice_mayor].life_dict[x,y].slice.coords
+                            self.screen.blit(image, coordinates)
+                        else:
+                            image       = self.Automatas[indice_menor].life_dict[x,y].convertedImage
+                            coordinates = self.Automatas[indice_menor].life_dict[x,y].slice.coords
+                            self.screen.blit(image, coordinates)
 
 class Celula():
     def __init__(self, alive, sliceImg, convertedImage = None):
@@ -66,12 +92,13 @@ class Celula():
         self.convertedImage = convertedImage
         
 class GameOfLife():
-    def __init__(self, name,  filepath, directory, width, height, cellsize):
+    def __init__(self, name,  filepath, directory, width, height, cellsize, priority):
         self.name = name
         self.WIDTH = width
         self.HEIGHT = height
         self.life_dict = self.GetLife_Dict(filepath, directory, width, height, cellsize)
         self.Cellsize = cellsize
+        self.Priority = priority 
 
     def GetLife_Dict(self, filepath, directory, width, height, cellsize):
         tiles = ProcesarImagen(filepath, directory, width, height, cellsize)
@@ -172,10 +199,32 @@ class GameOfLife():
         self.life_dict[midx+3,midy+3].alive = 1
         self.life_dict[midx+4,midy+3].alive = 1
 
+    def DrawSquare(self):
+
+        cell_width = int(self.WIDTH / self.Cellsize)
+        cell_height = int(self.HEIGHT / self.Cellsize)
+
+        qrtx=int(cell_height/4)
+        qrty=int(cell_width/4)
+
+        self.life_dict[qrtx+1,qrty].alive = 1
+        self.life_dict[qrtx+1,qrty+1].alive = 1
+        self.life_dict[qrtx+2,qrty].alive = 1
+        self.life_dict[qrtx+2,qrty+1].alive = 1
+    
+    def initializeLife(self):
+        for cell in self.life_dict.values():
+            cell.alive = random.randint(0,1)
+        
+
 if __name__ == '__main__':
     Go = Display(800,600,40)
-    Automata_1 = GameOfLife("Turismo", "../Image/TestImg/test.jpg", '../Image/CutImg/', \
-                             Go.WIDTH, Go.HEIGHT, Go.CELL)
-    Automata_1.Loafer()
+    Automata_1 = GameOfLife("Turismo", "../Image/TestImg/test.jpg", '../Image/CutImg/Turismo/', \
+                             Go.WIDTH, Go.HEIGHT, Go.CELL,5)
+    Automata_2 = GameOfLife("Turismo", "../Image/TestImg/machu.jpg", '../Image/CutImg/Machu/', \
+                             Go.WIDTH, Go.HEIGHT, Go.CELL,10)
+    Automata_2.initializeLife()
+    Automata_1.initializeLife()
     Go.AddAutomata(Automata_1)
+    Go.AddAutomata(Automata_2)
     Go.PlayGame()
