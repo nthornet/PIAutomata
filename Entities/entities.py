@@ -27,9 +27,11 @@ class Display():
         pygame.display.set_caption('Swarm Intelligence Game of Life')
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         self.CLOCK = pygame.time.Clock()
+
         self.DrawGrid()
-        for item in self.Automatas[0].life_dict:
-               self.Colorize(item)          
+        self.Automatas[0].Colorize()
+        self.PutOnScreen()
+
         while True:  # main loop that runs the game
             pygame.display.update()
             self.screen.fill(WHITE)
@@ -38,31 +40,26 @@ class Display():
                     pygame.quit()
                     sys.exit()
             self.RunStep()
-            for item in self.Automatas[0].life_dict:
-                self.Colorize(item)   
-       #     self.COUNT += 1
+            self.PutOnScreen()
             self.CLOCK.tick(5)
 
     def RunStep(self):
         for automata in self.Automatas:
             automata.RunStep()
+            automata.Colorize()
 
-    def Colorize(self,item):
-        x = item[0]
-        y = item[1]
-        
-        cel = self.Automatas[0].GetCell(x,y)
-        image = cel.convertedImage
-        
-        coordinates = cel.slice.coords
-        coordinates = (coordinates[0], coordinates[1])
-        
-        if self.Automatas[0].life_dict[item].alive == 0:
-            image.set_alpha(0)
-        elif self.Automatas[0].life_dict[item].alive == 1:
-            image.set_alpha(255)
-        self.screen.blit(image, coordinates)
+    def PutOnScreen(self):
+        for item in self.Automatas[0].life_dict:
+            image       = self.Automatas[0].life_dict[item].convertedImage
+            coordinates = self.Automatas[0].life_dict[item].slice.coords
+            self.screen.blit(image, coordinates)
 
+class Celula():
+    def __init__(self, alive, sliceImg, convertedImage = None):
+        self.alive = alive
+        self.slice = sliceImg
+        self.convertedImage = convertedImage
+        
 class GameOfLife():
     def __init__(self, name,  filepath, width, height, cellsize):
         self.name = name
@@ -87,6 +84,56 @@ class GameOfLife():
 
     def GetCell(self,x,y):
         return self.life_dict[x,y]
+
+    def Colorize(self):
+        cell_width = int(self.WIDTH / self.Cellsize)
+        cell_height = int(self.HEIGHT / self.Cellsize)
+
+        for y in range(0, cell_height):
+            for x in range(0, cell_width):
+                if self.life_dict[x, y].alive == 0:
+                    self.life_dict[x, y].convertedImage.set_alpha(0)
+                elif self.life_dict[x, y].alive == 1:
+                    self.life_dict[x, y].convertedImage.set_alpha(255)
+
+    def RunStep(self):
+        new_life = {}
+        for item in self.life_dict:
+            neighbour_count = self.GetNeighbours(item)
+            if self.life_dict[item].alive == 1:  # cell is alive and we need to check if it will stay alive
+                if neighbour_count < 2:
+                    # dies due to underpopulation
+                    new_life[item] = Celula(0, self.life_dict[item].slice, self.life_dict[item].convertedImage)  # 0
+                elif neighbour_count > 3:
+                    # dies due to overcrowding
+                    new_life[item] = Celula(0, self.life_dict[item].slice, self.life_dict[item].convertedImage)  # 0
+                else:
+                    # cell stays alive
+                    new_life[item] = Celula(1, self.life_dict[item].slice, self.life_dict[item].convertedImage)  # 1
+
+            elif self.life_dict[item].alive == 0:
+                if neighbour_count == 3:
+                    new_life[item] = Celula(1, self.life_dict[item].slice, self.life_dict[item].convertedImage)  # 1
+                else:
+                    new_life[item] = Celula(0, self.life_dict[item].slice, self.life_dict[item].convertedImage)  # 0
+        #   print('Run Step')
+        self.life_dict = new_life
+
+    def GetNeighbours(self, item):
+        neighbour_count = 0
+        for x in range(-1, 2):
+            for y in range(-1, 2):
+                neighbour = (item[0] + x, item[1] + y)
+                if neighbour[0] < self.WIDTH and neighbour[0] >= 0:
+                    if neighbour[1] < self.HEIGHT and neighbour[1] >= 0:
+                        try:
+                            if self.life_dict[neighbour].alive == 1 and (x, y) != (0, 0):
+                                neighbour_count += 1
+                        except KeyError:
+                            t = 1
+                            # catch key errors
+                            # print "error"
+        return neighbour_count
 
     def Loafer(self):
         midx= int((self.HEIGHT/self.Cellsize)/2)
@@ -119,51 +166,7 @@ class GameOfLife():
 
         self.life_dict[midx+3,midy+3].alive = 1
         self.life_dict[midx+4,midy+3].alive = 1
-        
-    def RunStep(self):
-        new_life = {}
-        for item in self.life_dict:
-            neighbour_count = self.GetNeighbours(item)
-            if self.life_dict[item].alive == 1:  # cell is alive and we need to check if it will stay alive
-                if neighbour_count < 2:
-                    # dies due to underpopulation
-                    new_life[item] = Celula(0, self.life_dict[item].slice, self.life_dict[item].convertedImage) #0
-                elif neighbour_count > 3:
-                    # dies due to overcrowding
-                    new_life[item] = Celula(0, self.life_dict[item].slice, self.life_dict[item].convertedImage) #0
-                else:
-                    # cell stays alive
-                    new_life[item] = Celula(1, self.life_dict[item].slice, self.life_dict[item].convertedImage) #1
-            
-            elif self.life_dict[item].alive == 0:
-                if neighbour_count == 3:
-                    new_life[item] = Celula(1, self.life_dict[item].slice, self.life_dict[item].convertedImage) #1
-                else:
-                    new_life[item] = Celula(0, self.life_dict[item].slice, self.life_dict[item].convertedImage) #0
-        #   print('Run Step')
-        self.life_dict = new_life
 
-    def GetNeighbours(self, item):
-        neighbour_count = 0
-        for x in range(-1, 2):
-            for y in range(-1, 2):
-                neighbour = (item[0] + x, item[1] + y)
-                if neighbour[0] < self.WIDTH and neighbour[0] >= 0:
-                    if neighbour[1] < self.HEIGHT and neighbour[1] >= 0:
-                        try:
-                            if self.life_dict[neighbour].alive == 1 and (x, y) != (0, 0):
-                                neighbour_count += 1
-                        except KeyError:
-                            t = 1
-                            # catch key errors
-                            # print "error"
-        return neighbour_count
-
-class Celula():
-    def __init__(self, alive, sliceImg, convertedImage = None):
-        self.alive = alive
-        self.slice = sliceImg 
-        self.convertedImage = convertedImage
 if __name__ == '__main__':
     Go = Display(800,600,40)
     Automata_1 = GameOfLife("Turismo", "../Image/TestImg/test.jpg", \
