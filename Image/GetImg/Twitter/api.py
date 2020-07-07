@@ -9,38 +9,48 @@ consumer_secret = "OEBysw9gGRzrpsJyZCcvK2uytSPHVlgb021b1zlfUo"
 access_token = "86863810-bxfssXDyzrzHuAWbStClTzDkVU6T4kjo6hNh8sLMJ"
 access_token_secret = "tw2cBjRzYZVNNrm84mo9GPj3JZqdEQ0EIhMyY0i7jp04N"
 
-auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-auth.set_access_token(access_token, access_token_secret)
-api = tweepy.API(auth, wait_on_rate_limit=True)
 
-# Open/Create a file to append data
-csvFile = open('ua.csv', 'a')
-# Use csv Writer
-csvWriter = csv.writer(csvFile)
-media_files = set()
-puntaje = 0
-lista = {}
-for tweet in tweepy.Cursor(api.search, q="#cusco", count=10,
-                           lang="en",
-                           since="2017-04-03").items():
+def dowloadImagesbyHastag(Hashtag): 
+    print(Hashtag)
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_token_secret)
+    api = tweepy.API(auth, wait_on_rate_limit=True)
 
-    media = tweet.entities.get('media', [])
-    if (len(media) > 0):
-        # print("favorite_count: " , tweet.favorite_count)
-        # print("retweet_count: " , tweet.retweet_count)
-        puntaje += tweet.favorite_count
-        puntaje += tweet.retweet_count * 2
-        lista[media[0]['media_url']] = puntaje
-        puntaje = 0
-        # print("--------------------------")
-    csvWriter.writerow([tweet.created_at, tweet.text.encode('utf-8')])
+    media_files = set()
+    puntaje = 0
+    lista = {}
 
-sorted_lista = sorted(lista.items(), key=lambda kv: kv[1], reverse=True)
+    for tweet in tweepy.Cursor(api.search, q=Hashtag, count=10,
+                            lang="en",
+                            since="2017-04-03").items(100):
+        
+        media = tweet.entities.get('media', [])
+        
+        if (len(media) > 0):
+            puntaje += tweet.favorite_count
+            puntaje += tweet.retweet_count * 2
+            lista[media[0]['media_url']] = puntaje
+            puntaje = 0
+        print("CP")
+    sorted_lista = sorted(lista.items(), key=lambda kv: kv[1], reverse=True)
 
-i = 1
-for img in sorted_lista:
-    print("EL puntaje es: ", img[1])
-    wget.download(img[0])
-    if i == 3:
-        break
-    i += 1
+    #Get Best Images
+    i = 1
+    for img in sorted_lista:
+        wget.download(img[0],out="../TestImg/")
+        if i == 2:
+            break
+        i += 1
+
+def getInputHastags():
+    NumHashTags = int(input("Ingrese el numero de Hastags: "))
+    Hashtags = ""
+    for i in range(0,NumHashTags):
+        temp = input("Ingrese Hastag: ")   
+        Hashtags = Hashtags + temp
+    return Hashtags
+
+
+if __name__ == "__main__": 
+    hashtag = getInputHastags()
+    dowloadImagesbyHastag(hashtag)
