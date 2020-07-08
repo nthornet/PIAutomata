@@ -1,5 +1,7 @@
 import sys,pygame
 import random
+import os
+from shutil import rmtree
 from pygame.locals import *
 try:
     from Process import ProcesarImagen
@@ -14,9 +16,9 @@ DARKGREY = (40, 40, 40)
 
 class Display():
     def __init__(self, width, height, cellsize):
-        self.WIDTH = width
-        self.HEIGHT = height
-        self.CELL = cellsize
+        self.Width = width
+        self.Height = height
+        self.Cell = cellsize
         self.Automatas = []
         self.screen = None
         self.CLOCK = None
@@ -27,30 +29,33 @@ class Display():
     def DrawGrid(self):
         for automata in self.Automatas:                 
             for item in automata.life_dict.values():
-                item.convertedImage = pygame.image.load(item.slice.filename).convert()            
+                item.convertedImage = pygame.image.load(item.slice.filename).convert()
+            automata.Colorize()    
 
     def PlayGame(self): 
         pygame.init()
         pygame.display.set_caption('Swarm Intelligence Game of Life')
-        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+        self.screen = pygame.display.set_mode((self.Width, self.Height))
         self.CLOCK = pygame.time.Clock()
 
         self.DrawGrid()
-        self.Automatas[0].Colorize()
-        self.PutOnScreen()
 
         while True:  # main loop that runs the game
-            pygame.display.update()
             self.screen.fill(WHITE)
+            self.PutOnScreen()
+            pygame.display.update()
+            self.RunStep()
+            
             for event in pygame.event.get():
                 if event.type == QUIT:
                     pygame.quit()
+                    for automata in self.Automatas:
+                        automata.RemoveImages()
                     sys.exit()
                 if event.type == KEYDOWN:
                     for automata in self.Automatas:
                         automata.initializeLife()
-            self.RunStep()
-            self.PutOnScreen()
+
             self.CLOCK.tick(5)
 
     def RunStep(self):
@@ -60,8 +65,8 @@ class Display():
 
     def PutOnScreen(self):
 
-        cell_width = int(self.WIDTH / self.CELL)
-        cell_height = int(self.HEIGHT / self.CELL)
+        cell_width = int(self.Width / self.Cell)
+        cell_height = int(self.Height / self.Cell)
 
         if len(self.Automatas) == 1:
             for item in self.Automatas[0].life_dict:
@@ -97,15 +102,20 @@ class Celula():
 class GameOfLife():
     def __init__(self, name,  filepath, directory, width, height, cellsize, priority):
         self.name = name
-        self.WIDTH = width
-        self.HEIGHT = height
+        self.Width = width
+        self.Height = height
         self.life_dict = self.GetLife_Dict(filepath, directory, width, height, cellsize)
         self.Cellsize = cellsize
         self.Priority = priority 
+        self.Directory = directory
 
     def GetLife_Dict(self, filepath, directory, width, height, cellsize):
-        tiles = ProcesarImagen(filepath, directory, width, height, cellsize)
+        try:
+            os.makedirs(directory)
+        except:
+            pass
         
+        tiles = ProcesarImagen(filepath, directory, width, height, cellsize)
         life_dict = {}
 
         cell_width = int(width/cellsize)
@@ -121,8 +131,8 @@ class GameOfLife():
         return self.life_dict[x,y]
 
     def Colorize(self):
-        cell_width = int(self.WIDTH / self.Cellsize)
-        cell_height = int(self.HEIGHT / self.Cellsize)
+        cell_width = int(self.Width / self.Cellsize)
+        cell_height = int(self.Height / self.Cellsize)
 
         for y in range(0, cell_height):
             for x in range(0, cell_width):
@@ -159,8 +169,8 @@ class GameOfLife():
         for x in range(-1, 2):
             for y in range(-1, 2):
                 neighbour = (item[0] + x, item[1] + y)
-                if neighbour[0] < self.WIDTH and neighbour[0] >= 0:
-                    if neighbour[1] < self.HEIGHT and neighbour[1] >= 0:
+                if neighbour[0] < self.Width and neighbour[0] >= 0:
+                    if neighbour[1] < self.Height and neighbour[1] >= 0:
                         try:
                             if self.life_dict[neighbour].alive == 1 and (x, y) != (0, 0):
                                 neighbour_count += 1
@@ -170,9 +180,20 @@ class GameOfLife():
                             # print "error"
         return neighbour_count
 
+    def RemoveImages(self):
+        try:
+            rmtree(self.Directory)
+        except:
+            pass       
+    
+    def ImageChange(self, filepath):
+        self.life_dict.clear()
+        self.RemoveImages()
+        self.life_dict = self.GetLife_Dict(filepath, self.directory, self.Width, self.Height, self.Cellsize)
+
     def Loafer(self):
-        midx= int((self.HEIGHT/self.Cellsize)/2)
-        midy= int((self.WIDTH/self.Cellsize)/2)
+        midx= int((self.Height/self.Cellsize)/2)
+        midy= int((self.Width/self.Cellsize)/2)
         self.life_dict[midx-3,midy-5].alive = 1
         self.life_dict[midx-2,midy-5].alive = 1
         self.life_dict[midx+1,midy-5].alive = 1
@@ -204,8 +225,8 @@ class GameOfLife():
 
     def DrawSquare(self):
 
-        cell_width = int(self.WIDTH / self.Cellsize)
-        cell_height = int(self.HEIGHT / self.Cellsize)
+        cell_width = int(self.Width / self.Cellsize)
+        cell_height = int(self.Height / self.Cellsize)
 
         qrtx=int(cell_height/4)
         qrty=int(cell_width/4)
@@ -223,9 +244,9 @@ class GameOfLife():
 if __name__ == '__main__':
     Go = Display(800,600,40)
     Automata_1 = GameOfLife("Turismo", "../Image/TestImg/test.jpg", '../Image/CutImg/Turismo/', \
-                             Go.WIDTH, Go.HEIGHT, Go.CELL,5)
+                             Go.Width, Go.Height, Go.Cell,5)
     Automata_2 = GameOfLife("Turismo", "../Image/TestImg/machu.jpg", '../Image/CutImg/Machu/', \
-                             Go.WIDTH, Go.HEIGHT, Go.CELL,10)
+                             Go.Width, Go.Height, Go.Cell,10)
     Automata_2.initializeLife()
     Automata_1.initializeLife()
     Go.AddAutomata(Automata_1)
