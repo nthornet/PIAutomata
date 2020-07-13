@@ -10,7 +10,7 @@ access_token = "86863810-bxfssXDyzrzHuAWbStClTzDkVU6T4kjo6hNh8sLMJ"
 access_token_secret = "tw2cBjRzYZVNNrm84mo9GPj3JZqdEQ0EIhMyY0i7jp04N"
 
 
-def dowloadImagesbyHastag(Hashtag): 
+def dowloadImagesbyHastag(Hashtag, Directory): 
     print(Hashtag)
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
@@ -38,7 +38,7 @@ def dowloadImagesbyHastag(Hashtag):
     for img in sorted_lista:
         aux = img[0].split('/')
         listaFilenames.append(aux[len(aux)-1])
-        wget.download(img[0], out="../../TestImg/")
+        wget.download(img[0], out = Directory)
         if i == 2:
             break
         i += 1
