@@ -1,8 +1,8 @@
 import sys
 sys.path.append('Image/ProcessImg')
 from Entities import entities as pi
-sys.path.append('../GetImg/Twitter')
-from Twitter import api as ap
+sys.path.append('Image/GetImg/Twitter')
+import api as ap
 import pygame
 from pygame.locals import *
 
