@@ -90,28 +90,27 @@ class GameOfLife():
                 cell.convertedImage.set_alpha(255)
 
     def RunStep(self):
-        new_life = copy(self.life_dict)
+        new_life = {}
         for item in self.life_dict:
             neighbour_count = self.GetNeighbours(item)
             if self.life_dict[item].alive == 1:  # cell is alive and we need to check if it will stay alive
                 if neighbour_count < 2:
                     # dies due to underpopulation
-                    new_life[item].alive = 0 
+                    new_life[item] = Celula(0, self.life_dict[item].slice) #0
                 elif neighbour_count > 3:
                     # dies due to overcrowding
-                    new_life[item].alive = 0
+                    new_life[item] = Celula(0, self.life_dict[item].slice) #0
                 else:
                     # cell stays alive
-                    new_life[item].alive = 1
-
+                    new_life[item] = Celula(1, self.life_dict[item].slice) #1
+            
             elif self.life_dict[item].alive == 0:
                 if neighbour_count == 3:
-                    new_life[item].alive = 1
+                    new_life[item] = Celula(1, self.life_dict[item].slice) #1
                 else:
-                    new_life[item].alive = 0
+                    new_life[item] = Celula(0, self.life_dict[item].slice) #0
         #   print('Run Step')
         self.life_dict = new_life
-
     def GetNeighbours(self, item):
         neighbour_count = 0
         for x in range(-1, 2):
@@ -210,9 +209,9 @@ def main():
                             WIDTH, HEIGHT, CELLSIZE, 10)
     Top = Display(800, 600, 40, SURFACE)
     Top.AddAutomata(Automata_1)
-    Top.AddAutomata(Automata_2)
-    Automata_1.initializeLife()
-    Automata_2.initializeLife()
+    #Top.AddAutomata(Automata_2)
+    Automata_1.Loafer()
+    #Automata_2.initializeLife()
     while True:  # main loop that runs the game
         SURFACE.fill(WHITE)
         Top.PutOnScreen()
@@ -229,7 +228,7 @@ def main():
                 for automata in Top.Automatas:
                     automata.initializeLife()
 
-        CLOCK.tick(5)
+        CLOCK.tick(50)
 
 
 if __name__ == '__main__':

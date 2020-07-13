@@ -1,6 +1,6 @@
 import tweepy
 import csv
-import pandas as pd
+#import pandas as pd
 import wget
 
 ####input your credentials here
@@ -19,10 +19,10 @@ def dowloadImagesbyHastag(Hashtag):
     media_files = set()
     puntaje = 0
     lista = {}
-
-    for tweet in tweepy.Cursor(api.search, q=Hashtag, count=10,
+    listaFilenames = []
+    for tweet in tweepy.Cursor(api.search, q=Hashtag, count=1000,
                             lang="en",
-                            since="2017-04-03").items(100):
+                            since="2017-04-03").items(1000):
         
         media = tweet.entities.get('media', [])
         
@@ -31,17 +31,19 @@ def dowloadImagesbyHastag(Hashtag):
             puntaje += tweet.retweet_count * 2
             lista[media[0]['media_url']] = puntaje
             puntaje = 0
-        print("CP")
     sorted_lista = sorted(lista.items(), key=lambda kv: kv[1], reverse=True)
 
     #Get Best Images
     i = 1
     for img in sorted_lista:
-        wget.download(img[0],out="../TestImg/")
+        aux = img[0].split('/')
+        listaFilenames.append(aux[len(aux)-1])
+        wget.download(img[0], out="../../TestImg/")
         if i == 2:
             break
         i += 1
 
+    return listaFilenames 
 def getInputHastags():
     NumHashTags = int(input("Ingrese el numero de Hastags: "))
     Hashtags = ""
