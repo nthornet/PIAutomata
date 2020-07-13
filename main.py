@@ -8,7 +8,7 @@ from pygame.locals import *
 
 def main():
     Hashtags = ap.getInputHastags()
-    FileNames = ap.dowloadImagesbyHastag()
+    FileNames = ap.dowloadImagesbyHastag(Hashtags)
 
     WIDTH    = 800
     HEIGHT   = 600
