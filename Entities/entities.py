@@ -52,22 +52,22 @@ class Celula():
         self.convertedImage = pygame.image.load(self.slice.filename).convert()
         
 class GameOfLife():
-    def __init__(self, name,  filepath, directory, width, height, cellsize, priority):
+    def __init__(self, name,  filepath, directory, width, height, cellsize, priority,color):
         self.name = name
         self.Width = width
         self.Height = height
-        self.life_dict = self.GetLife_Dict(filepath, directory, width, height, cellsize)
+        self.life_dict = self.GetLife_Dict(filepath, directory, width, height, cellsize,color)
         self.Cellsize = cellsize
         self.Priority = priority 
         self.Directory = directory
 
-    def GetLife_Dict(self, filepath, directory, width, height, cellsize):
+    def GetLife_Dict(self, filepath, directory, width, height, cellsize,color):
         try:
             os.makedirs(directory)
         except:
             pass
         
-        tiles = ProcesarImagen(filepath, directory, width, height, cellsize)
+        tiles = ProcesarImagen(filepath, directory, width, height, cellsize,color)
         life_dict = {}
 
         cell_width = int(width/cellsize)
@@ -204,14 +204,14 @@ def main():
 
     
     Automata_1 = GameOfLife("Turismo", "../Image/TestImg/test.jpg", '../Image/CutImg/Turismo/', \
-                             WIDTH, HEIGHT, CELLSIZE, 5)
+                             WIDTH, HEIGHT, CELLSIZE, 5, 'R')
     Automata_2 = GameOfLife("Turismo", "../Image/TestImg/machu.jpg", '../Image/CutImg/Machu/', \
-                            WIDTH, HEIGHT, CELLSIZE, 10)
+                            WIDTH, HEIGHT, CELLSIZE, 10, 'B')
     Top = Display(800, 600, 40, SURFACE)
     Top.AddAutomata(Automata_1)
-    #Top.AddAutomata(Automata_2)
+    Top.AddAutomata(Automata_2)
     Automata_1.Loafer()
-    #Automata_2.initializeLife()
+    Automata_2.initializeLife()
     while True:  # main loop that runs the game
         SURFACE.fill(WHITE)
         Top.PutOnScreen()

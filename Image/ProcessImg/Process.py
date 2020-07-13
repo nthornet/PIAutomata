@@ -4,7 +4,7 @@ from os import remove, makedirs
 from shutil import rmtree
 from copy import copy
 
-def ProcesarImagen(filepath, directory, width, height, cellsize):
+def ProcesarImagen(filepath, directory, width, height, cellsize,color):
     # cargar imagen
     img = Image.open(filepath)
 
@@ -12,8 +12,25 @@ def ProcesarImagen(filepath, directory, width, height, cellsize):
     imgresize = img.resize( (width, height) )
 
     # Darle un canal Aplha
-    imgresize = imgresize.convert("RGBA")
-    imgresize.save(filepath, 'PNG')
+    imgresize = imgresize.convert("RGB")
+    
+    width, height = imgresize.size
+    newImg = copy(imgresize)
+    pixels = newImg.load() 
+    for py in range(height):
+        for px in range(width):
+            r, g, b = imgresize.getpixel( (px,py) )
+            newr = 0
+            if color == 'R':
+                newr = r
+            newg = 0
+            newb = 0
+            if color == 'B':
+                newb = b
+            pixels[px,py] = (newr, newg, newb)
+    newImg.save(filepath,'PNG')
+    
+    #imgresize.save(filepath, 'PNG')
 
     # Corta la imagen
     tiles = image_slicer.slice(filepath, \
