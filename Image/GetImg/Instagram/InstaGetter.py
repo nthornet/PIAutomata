@@ -49,18 +49,48 @@ def get_topengagement(users):
     return top3, top3orig
 
 
-def downloadtop3(tops, posts, query):
+def multihash(hashtags, maxposts):
+    mainhash = hashtags[0]
+    secondaryhash = hashtags[1:]
+    posts = loader.get_hashtag_posts(mainhash)
+    users = {}
+    postdata = []
+    count = 0
+    for post in posts:
+        if count >= maxposts:
+            break
+        for hash in secondaryhash:
+            if hash in post.caption_hashtags:
+                profile = post.owner_profile
+                if profile.username not in users:
+                    summary = engagement.get_summary(profile)
+                    users[profile.username] = summary
+                    postdata.append(post)
+                    count += 1
+                    print('{}: {}'.format(count, profile.username))
+                    if count >= maxposts:
+                        break
+    return users, postdata
+
+
+def downloadtop3(tops, posts, query, location=None):
     count = 1
     for key in tops:
         loader.download_post(posts[key], '#' + query)
         t = time.strftime("%d_%m_%Y_%H")
-        shutil.move(os.path.join('#' + query), os.path.join(t, '#' + query, 'user' + str(count)))
+        if location is None:
+            shutil.move(os.path.join('#' + query), os.path.join(t, '#' + query, 'user' + str(count)))
+        else:
+            shutil.move(os.path.join('#' + query), os.path.join(location, 'user' + str(count)))
         count += 1
 
 
-if __name__ == "__main__":
-    hashtag = "cusco"
-    users, posts = get_hashtags_posts(hashtag)
+def getmultihashposts(hashtags, maxposts=10, location=None):
+    users, posts = multihash(hashtags, maxposts)
     top, original = get_topengagement(users)
-    downloadtop3(original, posts, hashtag)
-    print(users)
+    downloadtop3(original, posts, hashtags[0],location=location)
+
+
+if __name__ == "__main__":
+    getmultihashposts(hashtags=['cusco', 'tourism'], maxposts=10)
+
