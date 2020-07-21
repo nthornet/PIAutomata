@@ -42,10 +42,11 @@ def dowloadImagesbyHastag(Hashtag, Directory):
         aux = img[0].split('/')
         listaFilenames.append(aux[len(aux)-1])
         wget.download(img[0], out = Directory)
-        if i == 2:
+        if i == 20:
             break
         i += 1
-
+    
+    print("\n" + str(len(sorted_lista)))
     return listaFilenames 
 def getInputHastags():
     NumHashTags = int(input("Ingrese el numero de Hastags: "))

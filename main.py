@@ -6,6 +6,7 @@ import api as ap
 from shutil import rmtree
 import pygame
 from pygame.locals import *
+import time
 
 def main():
     Hashtags = ap.getInputHastags()
@@ -20,9 +21,13 @@ def main():
     SURFACE = pygame.display.set_mode((WIDTH, HEIGHT))
     CLOCK = pygame.time.Clock()
 
+
     FirstPath =  "Image/TestImg/" + FileNames[0]  
     SecondPath =  "Image/TestImg/" + FileNames[1] 
     
+    FileNames.remove(FileNames[0])
+    FileNames.remove(FileNames[0])
+
     Automata_1 = pi.GameOfLife("Turismo", SecondPath, 'Image/CutImg/Turismo/', \
                              WIDTH, HEIGHT, CELLSIZE, 5, 'R')
     Automata_2 = pi.GameOfLife("Turismo", FirstPath, 'Image/CutImg/Machu/', \
@@ -32,6 +37,7 @@ def main():
     Top.AddAutomata(Automata_2)
     Automata_1.Loafer()
     Automata_2.initializeLife()
+    t0 = time.clock()
     while True:  # main loop that runs the game
         SURFACE.fill(pi.WHITE)
         Top.PutOnScreen()
@@ -50,7 +56,8 @@ def main():
             if event.type == KEYDOWN:
                 if event.key == ord ("p"):
                     ext = True
-                    while ext: 
+                    while ext:
+                        t0 = time.clock() 
                         for event2 in pygame.event.get():
                             if event2.type == KEYDOWN:
                                 if event2.key == ord ("p"):
@@ -65,8 +72,17 @@ def main():
                 else:
                     for automata in Top.Automatas:
                         automata.initializeLife() 
-        #continuacion xd
+
         Top.RunStep()
+        t1 = time.clock()
+        if( t1 - t0 >= 20):
+            if len(FileNames) != 0:
+                FirstPath =  "Image/TestImg/" + FileNames[0]  
+                SecondPath =  "Image/TestImg/" + FileNames[1] 
+                Top.ImageChange([FirstPath,SecondPath])
+                FileNames.remove(FileNames[0])
+                FileNames.remove(FileNames[0])
+            t0 = time.clock()
 
         
 if __name__ == "__main__":

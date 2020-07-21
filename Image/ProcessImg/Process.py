@@ -30,8 +30,9 @@ def ProcesarImagen(filepath, directory, width, height, cellsize,color):
                 newg = int(g*85/255)
                 newb = int(b*90/255)
             pixels[px,py] = (newr, newg, newb)
+    remove(filepath)
     newImg.save(filepath,'PNG')
-    
+
     #imgresize.save(filepath, 'PNG')
 
     # Corta la imagen

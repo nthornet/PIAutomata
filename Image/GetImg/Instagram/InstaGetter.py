@@ -63,5 +63,4 @@ if __name__ == "__main__":
     users, posts = get_hashtags_posts(hashtag)
     top, original = get_topengagement(users)
     downloadtop3(original, posts, hashtag)
-
     print(users)

@@ -31,7 +31,13 @@ class Display():
         for automata in self.Automatas:
             automata.RunStep()
             automata.Colorize()
-            
+
+    def ImageChange(self,filenames):  
+        for i in range(len(filenames)):
+            self.Automatas[i].ImageChange(filenames[i])
+        for automata in self.Automatas:
+            automata.initializeLife()
+    
     def AddCell(self,pos):
         for automata in self.Automatas:
             automata.AddCell(pos)
@@ -66,6 +72,7 @@ class GameOfLife():
         self.Cellsize = cellsize
         self.Priority = priority 
         self.Directory = directory
+        self.Color = color 
 
     def AddCell(self,pos):
         x = floor(pos[0]/self.Cellsize)
@@ -146,12 +153,13 @@ class GameOfLife():
         try:
             rmtree(self.Directory)
         except:
-            pass       
+            pass
     
     def ImageChange(self, filepath):
         self.life_dict.clear()
         self.RemoveImages()
-        self.life_dict = self.GetLife_Dict(filepath, self.directory, self.Width, self.Height, self.Cellsize)
+        self.life_dict = self.GetLife_Dict(filepath, self.Directory, self.Width, self.Height, self.Cellsize,self.Color)
+        self.Colorize()
 
     def Loafer(self):
         midx= int((self.Height/self.Cellsize)/2)
