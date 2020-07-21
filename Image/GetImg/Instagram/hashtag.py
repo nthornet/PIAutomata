@@ -1,3 +1,5 @@
+from Image.GetImg.Instagram import engagement
+
 loader = Instaloader()
 NUM_POSTS = 10
 

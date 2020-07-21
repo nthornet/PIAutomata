@@ -1,3 +1,6 @@
+import random
+
+
 def resetLife():
     life_dict= {}
     for y in range(0,CELL_HEIGHT):
@@ -188,5 +191,5 @@ def DrawEater(life_dict,center):
 
 def initializeLife(life_dict):
     for cell in life_dict:
-        life_dict[cell]=random.randint(0,1)
+        life_dict[cell]= random.randint(0,1)
     return life_dict
