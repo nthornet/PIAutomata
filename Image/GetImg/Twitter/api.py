@@ -1,8 +1,9 @@
 import tweepy
 import csv
 #import pandas as pd
+import os
 import wget
-
+from shutil import rmtree
 ####input your credentials here
 consumer_key = "dvlMlZFX7927kEqaNEFaVg"
 consumer_secret = "OEBysw9gGRzrpsJyZCcvK2uytSPHVlgb021b1zlfUo"
@@ -11,6 +12,10 @@ access_token_secret = "tw2cBjRzYZVNNrm84mo9GPj3JZqdEQ0EIhMyY0i7jp04N"
 
 
 def dowloadImagesbyHastag(Hashtag, Directory): 
+    try: 
+        os.makedirs(Directory)        
+    except:
+        pass
     print(Hashtag)
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
@@ -20,9 +25,7 @@ def dowloadImagesbyHastag(Hashtag, Directory):
     puntaje = 0
     lista = {}
     listaFilenames = []
-    for tweet in tweepy.Cursor(api.search, q=Hashtag, count=1000,
-                            lang="en",
-                            since="2017-04-03").items(1000):
+    for tweet in tweepy.Cursor(api.search, q=Hashtag, count=1000).items():
         
         media = tweet.entities.get('media', [])
         

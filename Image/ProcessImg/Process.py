@@ -21,14 +21,14 @@ def ProcesarImagen(filepath, directory, width, height, cellsize,color):
         for px in range(width):
             r, g, b = imgresize.getpixel( (px,py) )
             newr = 0
-            if color == 'R':
-                newr = int(r*0.8941)
-                newg = int(g*0.4666)
-                newb = int(b*0.4666)
             if color == 'B':
-                newr = int(r*0.4666)
-                newg = int(g*0.4666)
-                newb = int(b*0.8941)
+                newr = int(r*90/255)
+                newg = int(g*85/255)
+                newb = int(b*222/255)
+            if color == 'R':
+                newr = int(r*222/255)
+                newg = int(g*85/255)
+                newb = int(b*90/255)
             pixels[px,py] = (newr, newg, newb)
     newImg.save(filepath,'PNG')
     

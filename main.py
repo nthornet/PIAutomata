@@ -3,12 +3,14 @@ sys.path.append('Image/ProcessImg')
 from Entities import entities as pi
 sys.path.append('Image/GetImg/Twitter')
 import api as ap
+from shutil import rmtree
 import pygame
 from pygame.locals import *
 
 def main():
     Hashtags = ap.getInputHastags()
-    FileNames = ap.dowloadImagesbyHastag(Hashtags, "Image/TestImg/")
+    directorio = "Image/TestImg/"
+    FileNames = ap.dowloadImagesbyHastag(Hashtags, directorio)
 
     WIDTH    = 800
     HEIGHT   = 600
@@ -34,18 +36,38 @@ def main():
         SURFACE.fill(pi.WHITE)
         Top.PutOnScreen()
         pygame.display.update()
-        Top.RunStep()
-        
+        CLOCK.tick(5)
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 for automata in Top.Automatas:
                     automata.RemoveImages()
+                rmtree(directorio)
                 sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                Top.AddCell(pos)
             if event.type == KEYDOWN:
-                for automata in Top.Automatas:
-                    automata.initializeLife()
+                if event.key == ord ("p"):
+                    ext = True
+                    while ext: 
+                        for event2 in pygame.event.get():
+                            if event2.type == KEYDOWN:
+                                if event2.key == ord ("p"):
+                                    ext = False 
+                                    break     
+                            if event2.type == pygame.MOUSEBUTTONDOWN:
+                                pos = pygame.mouse.get_pos()
+                                Top.AddCell(pos)
+                                SURFACE.fill(pi.WHITE)
+                                Top.PutOnScreen()
+                                pygame.display.update()                        
+                else:
+                    for automata in Top.Automatas:
+                        automata.initializeLife() 
+        #continuacion xd
+        Top.RunStep()
 
-        CLOCK.tick(50)
+        
 if __name__ == "__main__":
     main()

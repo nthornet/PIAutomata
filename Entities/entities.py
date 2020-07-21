@@ -1,6 +1,7 @@
 import sys,pygame
 import random
 import os
+from math import floor 
 from shutil import rmtree
 from copy import copy
 from pygame.locals import *
@@ -30,7 +31,12 @@ class Display():
         for automata in self.Automatas:
             automata.RunStep()
             automata.Colorize()
-
+            
+    def AddCell(self,pos):
+        for automata in self.Automatas:
+            automata.AddCell(pos)
+            automata.Colorize()
+            
     def PutOnScreen(self):
         OrderedAutomatons = sorted(self.Automatas, key = lambda automata : automata.Priority, reverse = True)
 
@@ -61,6 +67,14 @@ class GameOfLife():
         self.Priority = priority 
         self.Directory = directory
 
+    def AddCell(self,pos):
+        x = floor(pos[0]/self.Cellsize)
+        y = floor(pos[1]/self.Cellsize)
+        if self.life_dict[x,y].alive == 1:
+            self.life_dict[x,y].alive = 0
+        else:
+            self.life_dict[x,y].alive = 1
+
     def GetLife_Dict(self, filepath, directory, width, height, cellsize,color):
         try:
             os.makedirs(directory)
@@ -82,6 +96,7 @@ class GameOfLife():
     def GetCell(self,x,y):
         return self.life_dict[x,y]
 
+    
     def Colorize(self):
         for cell in self.life_dict.values():
             if(cell.alive == 0):
