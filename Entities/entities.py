@@ -41,7 +41,11 @@ class Display():
         for automata in self.Automatas:
             automata.AddCell(pos)
             automata.Colorize()
-            
+
+    def InitializeLife(self):
+        for automata in self.Automatas:
+            automata.initializeLife()
+
     def PutOnScreen(self):
         OrderedAutomatons = sorted(self.Automatas, key = lambda automata : automata.Priority, reverse = True)
 
@@ -73,7 +77,7 @@ class GameOfLife():
         self.Directory = directory
         self.Color = color 
 
-    def AddCell(self,pos):
+    def AddCell(self, pos):
         x = floor(pos[0]/self.Cellsize)
         y = floor(pos[1]/self.Cellsize)
         if self.life_dict[x,y].alive == 1:
@@ -81,13 +85,13 @@ class GameOfLife():
         else:
             self.life_dict[x,y].alive = 1
 
-    def GetLife_Dict(self, filepath, directory, width, height, cellsize,color):
+    def GetLife_Dict(self, filepath, directory, width, height, cellsize, color):
         try:
             os.makedirs(directory)
         except:
             pass
         
-        tiles = ProcesarImagen(filepath, directory, width, height, cellsize,color)
+        tiles = ProcesarImagen(filepath, directory, width, height, cellsize, color)
         life_dict = {}
 
         cell_width = int(width/cellsize)
@@ -196,7 +200,6 @@ class GameOfLife():
         self.Colorize()
 
     def DrawSquare(self):
-
         cell_width = int(self.Width / self.Cellsize)
         cell_height = int(self.Height / self.Cellsize)
 

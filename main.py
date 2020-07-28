@@ -26,7 +26,10 @@ CLOCK = None
 
 Top = None
 AutomataA = None
-AutomataB = None 
+AutomataB = None
+
+t0 = None
+t1 = None
 
 def InicializarAutomatas(FirstPath, SecondPath):
     global Top, AutomataA, AutomataB
@@ -35,6 +38,7 @@ def InicializarAutomatas(FirstPath, SecondPath):
     AutomataB = pi.GameOfLife("Turismo", SecondPath, 'Image/CutImg/Machu/', \
                             WIDTH, HEIGHT, CELLSIZE,  0, 'B')
     Top = pi.Display(WIDTH, HEIGHT, CELLSIZE, SURFACE, [AutomataA, AutomataB])
+    Top.InitializeLife()
 
 def InitPygame():
     global SURFACE, CLOCK
@@ -64,8 +68,28 @@ def ClickEv(event):
         Top.AddCell(pos)
         Update()
 
+def PauseProgram():
+    NotExit = True
+    while NotExit:
+        for event in pygame.event.get():
+            QuitEv(event)
+            ClickEv(event)
+            if event.type == KEYDOWN:
+                if event.key == ord("p"):
+                    NotExit = False
+                    break
+
+def KeyDownEv(event):
+    global Top, t0
+    if(event.type == KEYDOWN):
+        if(event.key == ord("p")):
+            t0 = time.clock()
+            PauseProgram()
+        else:
+            Top.InitializeLife()
+
 def main():
-    global Top, AutomataA, AutomataB, SURFACE, CLOCK
+    global Top, AutomataA, AutomataB, SURFACE, CLOCK, t0, t1
     Hashtags = ap.getInputHastags()
     FileNames = ap.dowloadImagesbyHastag(Hashtags, Folder)
     
@@ -77,34 +101,19 @@ def main():
     InitPygame()
     InicializarAutomatas(FirstPath, SecondPath)
 
-    AutomataA.initializeLife()
-    AutomataB.initializeLife()
     t0 = time.clock()
     while True:  # main loop that runs the game
         Update()
         CLOCK.tick(5)
+        
         for event in pygame.event.get():
             QuitEv(event)
             ClickEv(event)
-            if event.type == KEYDOWN:
-                if event.key == ord ("p"):
-                    ext = True
-                    while ext:
-                        t0 = time.clock() 
-                        for event2 in pygame.event.get():
-                            QuitEv(event2)
-                            ClickEv(event2)
-                            if event2.type == KEYDOWN:
-                                if event2.key == ord ("p"):
-                                    ext = False 
-                                    break                          
-                else:
-                    for automata in Top.Automatas:
-                        automata.initializeLife() 
+            KeyDownEv(event)
 
         Top.RunStep()
         t1 = time.clock()
-        if( t1 - t0 >= 20):
+        if( t1 - t0 >= 30):
             if len(FileNames) != 0:
                 FirstPath =  Folder + FileNames[0]  
                 SecondPath =  Folder + FileNames[1] 
