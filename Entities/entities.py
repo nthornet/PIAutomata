@@ -11,11 +11,6 @@ except:
     sys.path.append('../Image/ProcessImg/')
     from Process import ProcesarImagen
 
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-DARKGREY = (40, 40, 40)
-
 class Display():
     def __init__(self, width, height, cellsize, screen, listAutomatas = []):
         self.Width = width
@@ -38,6 +33,10 @@ class Display():
         for automata in self.Automatas:
             automata.initializeLife()
     
+    def RemoveImages(self):
+        for automata in self.Automatas:
+            automata.RemoveImages()
+
     def AddCell(self,pos):
         for automata in self.Automatas:
             automata.AddCell(pos)
@@ -133,6 +132,7 @@ class GameOfLife():
                     new_life[item] = Celula(0, self.life_dict[item].slice) #0
         #   print('Run Step')
         self.life_dict = new_life
+
     def GetNeighbours(self, item):
         neighbour_count = 0
         for x in range(-1, 2):
@@ -214,45 +214,3 @@ class GameOfLife():
         for cell in self.life_dict.values():
             cell.alive = random.randint(0,1)
         self.Colorize()
-
-
-def main():
-    WIDTH    = 800
-    HEIGHT   = 600
-    CELLSIZE = 40
-    pygame.init()
-    pygame.display.set_caption('Swarm Intelligence Game of Life')
-    SURFACE = pygame.display.set_mode((WIDTH, HEIGHT))
-    CLOCK = pygame.time.Clock()
-
-    
-    Automata_1 = GameOfLife("Turismo", "../Image/TestImg/test.jpg", '../Image/CutImg/Turismo/', \
-                             WIDTH, HEIGHT, CELLSIZE, 5, 'R')
-    Automata_2 = GameOfLife("Turismo", "../Image/TestImg/machu.jpg", '../Image/CutImg/Machu/', \
-                            WIDTH, HEIGHT, CELLSIZE, 10, 'B')
-    Top = Display(800, 600, 40, SURFACE)
-    Top.AddAutomata(Automata_1)
-    Top.AddAutomata(Automata_2)
-    Automata_1.Loafer()
-    Automata_2.initializeLife()
-    while True:  # main loop that runs the game
-        SURFACE.fill(WHITE)
-        Top.PutOnScreen()
-        pygame.display.update()
-        Top.RunStep()
-        
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                for automata in Top.Automatas:
-                    automata.RemoveImages()
-                sys.exit()
-            if event.type == KEYDOWN:
-                for automata in Top.Automatas:
-                    automata.initializeLife()
-
-        CLOCK.tick(50)
-
-
-if __name__ == '__main__':
-    main()    
