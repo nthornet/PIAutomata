@@ -88,6 +88,19 @@ def KeyDownEv(event):
         else:
             Top.InitializeLife()
 
+def ShowTemp(path):
+    global SURFACE
+    
+    img = Image.open(filepath)
+    imgresize = img.resize( (width, height) )
+    imgresize.save(path,'PNG')
+
+    img = pygame.image.load(path).convert()
+    
+    SURFACE.fill(WHITE)
+    SURFACE.blit(img, (0,0))
+    SURFACE.pygame.display.update()                    
+
 def main():
     global Top, AutomataA, AutomataB, SURFACE, CLOCK, t0, t1
     Hashtags = ap.getInputHastags()
@@ -102,6 +115,7 @@ def main():
     InicializarAutomatas(FirstPath, SecondPath)
 
     t0 = time.clock()
+    ShowTemp()
     while True:  # main loop that runs the game
         Update()
         CLOCK.tick(5)
@@ -113,7 +127,8 @@ def main():
 
         Top.RunStep()
         t1 = time.clock()
-        if( t1 - t0 >= 30):
+        if( t1 - t0 >= 20):
+            ShowTemp()
             if len(FileNames) != 0:
                 FirstPath =  Folder + FileNames[0]  
                 SecondPath =  Folder + FileNames[1] 
