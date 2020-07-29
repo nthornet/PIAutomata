@@ -4,7 +4,7 @@ from os import remove, makedirs
 from shutil import rmtree
 from copy import copy
 
-def ProcesarImagen(filepath, directory, width, height, cellsize,color):
+def ProcesarImagen(filepath, DirectorySlices, DirectoryAutomata, width, height, cellsize, color):
     # cargar imagen
     img = Image.open(filepath)
 
@@ -30,19 +30,18 @@ def ProcesarImagen(filepath, directory, width, height, cellsize,color):
                 newg = int(g*85/255)
                 newb = int(b*90/255)
             pixels[px,py] = (newr, newg, newb)
-    remove(filepath)
-    newImg.save(filepath,'PNG')
-
-    #imgresize.save(filepath, 'PNG')
+    aux = filepath.split('/')
+    path = DirectoryAutomata+aux[len(aux)-1]         
+    newImg.save(path, 'PNG')
 
     # Corta la imagen
-    tiles = image_slicer.slice(filepath, \
+    tiles = image_slicer.slice(path, \
                             number_tiles=None, \
                             col=int(width/cellsize), \
                             row=int(height/cellsize), \
                             save=False)
 
-    image_slicer.save_tiles(tiles, directory=directory, prefix='slice', format='png')
+    image_slicer.save_tiles(tiles, directory=DirectorySlices, prefix='slice', format='png')
 
     return tiles
 

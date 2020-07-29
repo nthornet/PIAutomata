@@ -24,11 +24,9 @@ def dowloadImagesbyHastag(Hashtag, Directory):
     media_files = set()
     puntaje = 0
     lista = {}
-    listaFilenames = []
+    
     for tweet in tweepy.Cursor(api.search, q=Hashtag, count=1000).items():
-        
-        media = tweet.entities.get('media', [])
-        
+        media = tweet.entities.get('media', [])    
         if (len(media) > 0):
             puntaje += tweet.favorite_count
             puntaje += tweet.retweet_count * 2
@@ -39,15 +37,11 @@ def dowloadImagesbyHastag(Hashtag, Directory):
     #Get Best Images
     i = 1
     for img in sorted_lista:
-        aux = img[0].split('/')
-        listaFilenames.append(aux[len(aux)-1])
         wget.download(img[0], out = Directory)
         if i == 20:
             break
         i += 1
     
-    print("\n" + str(len(sorted_lista)))
-    return listaFilenames 
 def getInputHastags():
     NumHashTags = int(input("Ingrese el numero de Hastags: "))
     Hashtags = ""

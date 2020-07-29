@@ -67,14 +67,15 @@ class Celula():
         self.convertedImage = pygame.image.load(self.slice.filename).convert()
         
 class GameOfLife():
-    def __init__(self, name,  filepath, directory, width, height, cellsize, priority,color):
+    def __init__(self, name,  filepath, DirectorySlices, DirectoryAutomata, width, height, cellsize, priority,color):
         self.name = name
         self.Width = width
         self.Height = height
-        self.life_dict = self.GetLife_Dict(filepath, directory, width, height, cellsize,color)
+        self.life_dict = self.GetLife_Dict(filepath, DirectorySlices, DirectoryAutomata, width, height, cellsize,color)
         self.Cellsize = cellsize
         self.Priority = priority 
-        self.Directory = directory
+        self.DirectorySlices = DirectorySlices
+        self.DirectoryAutomata = DirectoryAutomata
         self.Color = color 
 
     def AddCell(self, pos):
@@ -85,13 +86,13 @@ class GameOfLife():
         else:
             self.life_dict[x,y].alive = 1
 
-    def GetLife_Dict(self, filepath, directory, width, height, cellsize, color):
+    def GetLife_Dict(self, filepath, DirectorySlices, DirectoryAutomata, width, height, cellsize, color):
         try:
-            os.makedirs(directory)
+            os.makedirs(DirectorySlices)
         except:
             pass
         
-        tiles = ProcesarImagen(filepath, directory, width, height, cellsize, color)
+        tiles = ProcesarImagen(filepath, DirectorySlices, DirectoryAutomata, width, height, cellsize, color)
         life_dict = {}
 
         cell_width = int(width/cellsize)
@@ -155,14 +156,14 @@ class GameOfLife():
 
     def RemoveImages(self):
         try:
-            rmtree(self.Directory)
+            rmtree(self.DirectorySlices)
         except:
             pass
     
     def ImageChange(self, filepath):
         self.life_dict.clear()
         self.RemoveImages()
-        self.life_dict = self.GetLife_Dict(filepath, self.Directory, self.Width, self.Height, self.Cellsize,self.Color)
+        self.life_dict = self.GetLife_Dict(filepath, self.DirectorySlices, self.DirectoryAutomata, self.Width, self.Height, self.Cellsize,self.Color)
         self.Colorize()
 
     def Loafer(self):

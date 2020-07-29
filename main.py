@@ -9,13 +9,15 @@ from shutil import rmtree
 import pygame
 from pygame.locals import *
 import time
+import os
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 DARKGREY = (40, 40, 40)
 
-Folder = "Image/TestImg/"
+FolderDB    = "Image/DataBase/"
+FolderImage = "Image/ImagesAutomatas/"
 
 WIDTH    = 800
 HEIGHT   = 600
@@ -33,9 +35,14 @@ t1 = None
 
 def InicializarAutomatas(FirstPath, SecondPath):
     global Top, AutomataA, AutomataB
-    AutomataA = pi.GameOfLife("Turismo", FirstPath, 'Image/CutImg/Turismo/', \
+    try:
+        rmtree(FolderImage)
+    except:
+        pass
+    os.makedirs(FolderImage)
+    AutomataA = pi.GameOfLife("Turismo", FirstPath, 'Image/CutImg/Turismo/', FolderImage, \
                              WIDTH, HEIGHT, CELLSIZE, 0, 'R')
-    AutomataB = pi.GameOfLife("Turismo", SecondPath, 'Image/CutImg/Machu/', \
+    AutomataB = pi.GameOfLife("Turismo", SecondPath, 'Image/CutImg/Machu/', FolderImage, \
                             WIDTH, HEIGHT, CELLSIZE,  0, 'B')
     Top = pi.Display(WIDTH, HEIGHT, CELLSIZE, SURFACE, [AutomataA, AutomataB])
     Top.InitializeLife()
@@ -46,6 +53,20 @@ def InitPygame():
     pygame.display.set_caption('Swarm Intelligence Game of Life')
     SURFACE = pygame.display.set_mode((WIDTH, HEIGHT))
     CLOCK = pygame.time.Clock()
+
+def GenerarBaseDatos():
+    txt = """¿Generar Base de Datos?
+    1. Si [1]
+    2. No [2]
+    Opcion -> """
+    op = int(input(txt+""))
+    if(op == 1):
+        try:
+            rmtree(FolderDB)
+        except:
+            pass
+        Hashtags = ap.getInputHastags()
+        ap.dowloadImagesbyHastag(Hashtags, FolderDB)
 
 def Update():
     global Top, SURFACE
@@ -58,7 +79,7 @@ def QuitEv(event):
     if(event.type == QUIT):
         pygame.quit()
         Top.RemoveImages()
-        rmtree(Folder)
+        rmtree(FolderImage)
         sys.exit()
 
 def ClickEv(event):
@@ -103,11 +124,10 @@ def ShowTemp(path):
 
 def main():
     global Top, AutomataA, AutomataB, SURFACE, CLOCK, t0, t1
-    Hashtags = ap.getInputHastags()
-    FileNames = ap.dowloadImagesbyHastag(Hashtags, Folder)
-    
-    FirstPath =  Folder + FileNames[0]  
-    SecondPath =  Folder + FileNames[1] 
+    GenerarBaseDatos()
+    FileNames = os.listdir(FolderDB)
+    FirstPath  =  FolderDB + FileNames[0]  
+    SecondPath =  FolderDB + FileNames[1] 
     FileNames.remove(FileNames[0])
     FileNames.remove(FileNames[0])
 
@@ -115,7 +135,7 @@ def main():
     InicializarAutomatas(FirstPath, SecondPath)
 
     t0 = time.clock()
-    ShowTemp()
+    #ShowTemp()
     while True:  # main loop that runs the game
         Update()
         CLOCK.tick(5)
@@ -128,10 +148,10 @@ def main():
         Top.RunStep()
         t1 = time.clock()
         if( t1 - t0 >= 20):
-            ShowTemp()
+            #ShowTemp()
             if len(FileNames) != 0:
-                FirstPath =  Folder + FileNames[0]  
-                SecondPath =  Folder + FileNames[1] 
+                FirstPath =  FolderDB + FileNames[0]  
+                SecondPath =  FolderDB + FileNames[1] 
                 Top.ImageChange([FirstPath,SecondPath])
                 FileNames.remove(FileNames[0])
                 FileNames.remove(FileNames[0])
