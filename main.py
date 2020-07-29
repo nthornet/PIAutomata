@@ -10,6 +10,7 @@ import pygame
 from pygame.locals import *
 import time
 import os
+from PIL import Image
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -18,6 +19,7 @@ DARKGREY = (40, 40, 40)
 
 FolderDB    = "Image/DataBase/"
 FolderImage = "Image/ImagesAutomatas/"
+FolderUsers = "Image/GetImg/UserImages/"
 
 WIDTH    = 800
 HEIGHT   = 600
@@ -32,6 +34,11 @@ AutomataB = None
 
 t0 = None
 t1 = None
+
+index = 0
+
+FileNamesUsers = None
+FileNames = None
 
 def InicializarAutomatas(FirstPath, SecondPath):
     global Top, AutomataA, AutomataB
@@ -112,20 +119,29 @@ def KeyDownEv(event):
 def ShowTemp(path):
     global SURFACE
     
-    img = Image.open(filepath)
-    imgresize = img.resize( (width, height) )
+    img = Image.open(path)
+    imgresize = img.resize( (WIDTH, HEIGHT) )
     imgresize.save(path,'PNG')
 
     img = pygame.image.load(path).convert()
     
     SURFACE.fill(WHITE)
     SURFACE.blit(img, (0,0))
-    SURFACE.pygame.display.update()                    
+    pygame.display.update()
+    time.sleep(3)
+
+def ShowImageUser():
+    global index
+    if(index < len(FileNamesUsers)):
+        ShowTemp(FolderUsers + FileNamesUsers[index])
+        index += 1
 
 def main():
     global Top, AutomataA, AutomataB, SURFACE, CLOCK, t0, t1
     GenerarBaseDatos()
+    index = 0
     FileNames = os.listdir(FolderDB)
+    FileNamesUsers = os.listdir(FolderUsers)
     FirstPath  =  FolderDB + FileNames[0]  
     SecondPath =  FolderDB + FileNames[1] 
     FileNames.remove(FileNames[0])
@@ -135,7 +151,7 @@ def main():
     InicializarAutomatas(FirstPath, SecondPath)
 
     t0 = time.clock()
-    #ShowTemp()
+    ShowImageUser()
     while True:  # main loop that runs the game
         Update()
         CLOCK.tick(5)
@@ -148,7 +164,7 @@ def main():
         Top.RunStep()
         t1 = time.clock()
         if( t1 - t0 >= 20):
-            #ShowTemp()
+            ShowImageUser()
             if len(FileNames) != 0:
                 FirstPath =  FolderDB + FileNames[0]  
                 SecondPath =  FolderDB + FileNames[1] 
